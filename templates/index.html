@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <title>Fibonacci</title>
+        <link rel="stylesheet" href="/static/css/styles.css" type="text/css" >
+    </head>
+    <body>
+        <div style="text-align: center; margin: 10%">
+            <h2>Nth Fibonacci number</h2>
+
+            <form>
+                <div>
+
+                    <input type="text" id="index" class="field-style" placeholder="Enter currency">
+                    <input type="button" value="submit" id="submit" placeholder="submit">
+
+
+                </div>
+            </form>
+            <div>
+                <h3 id="success"></h3>
+                <label class="error" id="error"></label>
+            </div>
+            <div>
+                <label id="time"></label>
+            </div>
+        </div>
+
+    </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("#submit").bind("click", function(event){
+            fibonacci();
+        });
+    });
+    function fibonacci() {
+        var data = new FormData()
+
+        data.append('index', $('#index').val())
+        data.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+
+            $.ajax({
+                url: '/',
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                data: data,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    console.log(data)
+                    document.getElementById('error').innerText='';
+                    document.getElementById('success').innerText="The "+$('#index').val()+"th fibonacci number is  "+data['nth_term'];
+                    document.getElementById('time').innerText="The time taken is  "+data['time']+" seconds";
+                },
+                error:function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    document.getElementById('error').innerText=err.error;
+                    document.getElementById('time').innerText="";
+                    document.getElementById('success').innerText="";
+
+                }
+            });
+
+    }
+</script>
+</html>
